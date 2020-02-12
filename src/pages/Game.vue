@@ -10,10 +10,7 @@
         ></span>
       </span>
     </div>
-    <p>
-      Score:
-      <b>{{ score }}</b>
-    </p>
+    <p v-for="(x,i) in players" :key="i">score: {{ x.score }}</p>
   </div>
 </template>
 
@@ -26,7 +23,15 @@ export default {
       snakeLenth: 1,
       snakeDirection: "right",
       food: {},
-      game_on: true
+      game_on: true,
+      you: {},
+      players: [
+        { snake: [], snakeLenth: 1, snakeDirection: "right", score: 0 },
+        { snake: [], snakeLenth: 1, snakeDirection: "right", score: 0 },
+        { snake: [], snakeLenth: 1, snakeDirection: "right", score: 0 },
+        { snake: [], snakeLenth: 1, snakeDirection: "right", score: 0 },
+        { snake: [], snakeLenth: 1, snakeDirection: "right", score: 0 }
+      ]
     };
   },
   created: function() {
@@ -38,97 +43,79 @@ export default {
   computed: {
     list: function() {
       var x = [];
-
-      for (var i = 0; i <= this.total; i++) {
-        x.push(i);
-      }
-
+      for (var i = 0; i <= this.total; i++) x.push(i);
       return x;
-    },
-    score: function() {
-      return this.snakeLenth - 1;
     }
   },
 
   methods: {
     init() {
       this.newGame();
-
       window.addEventListener("keyup", this.changeDirection);
 
       setInterval(this.move, 100);
     },
     newGame() {
-      this.snakeLenth = 1;
-      this.snake = [];
-
-      this.snake.push(this.getRand());
-      this.food = this.getRand();
-    },
-    move() {
-      var last = this.snake[this.snake.length - 1];
-
-      var x = last.x;
-      var y = last.y;
-
-      if (x == this.food.x && y == this.food.y) {
-        this.eat();
-      }
-
-      switch (this.snakeDirection) {
-        case "up":
-          y -= 1;
-          break;
-
-        case "right":
-          x += 1;
-
-          break;
-
-        case "down":
-          y += 1;
-
-          break;
-
-        case "left":
-          x -= 1;
-          break;
-      }
-
-      if (y > this.total) {
-        y = 0;
-      }
-
-      if (x > this.total) {
-        x = 0;
-      }
-
-      if (y < 0) {
-        y = this.total;
-      }
-
-      if (x < 0) {
-        x = this.total;
-      }
-
-      // this bite
-      this.snake.forEach(i => {
-        if (i != undefined && i.x == x && i.y == y) {
-          this.newGame();
-        }
+      this.players.forEach(player => {
+        player.snakeLenth = 1;
+        player.snake = [];
+        player.snake.push(this.getRand());
       });
 
-      this.snake.push({ x: x, y: y });
+      this.food = this.getRand();
+    },
 
-      if (this.snake.length > this.snakeLenth) {
-        this.snake.shift();
-      }
+    move() {
+      this.players.forEach(player => {
+        var last = player.snake[player.snake.length - 1];
+        var x = last.x;
+        var y = last.y;
+
+        if (x == this.food.x && y == this.food.y) this.eat(player);
+
+        switch (player.snakeDirection) {
+          case "up":
+            y -= 1;
+            break;
+          case "right":
+            x += 1;
+            break;
+          case "down":
+            y += 1;
+            break;
+          case "left":
+            x -= 1;
+            break;
+        }
+
+        if (y > this.total) y = 0;
+        if (x > this.total) x = 0;
+        if (y < 0) y = this.total;
+        if (x < 0) x = this.total;
+
+        // this bite
+        player.snake.forEach(i => {
+          if (i != undefined && i.x == x && i.y == y) this.newBegin(player);
+        });
+
+        player.snake.push({ x: x, y: y });
+
+        if (player.snake.length > player.snakeLenth) player.snake.shift();
+      });
+    },
+    newBegin(player) {
+      player.snakeLenth = 1;
+      player.snake = [];
+      player.score = 0;
     },
     isSnake(x, y) {
-     
-      for (const i in this.snake) {
-        if (this.snake[i].x == x && this.snake[i].y == y) {
-          return true;
+      for (const i in this.players) {
+        for (const j in this.players[i].snake) {
+          if (
+            this.players[i].snake[j].x == x &&
+            this.players[i].snake[j].y == y
+          )
+            return true;
         }
       }
     },
@@ -137,8 +124,8 @@ export default {
         return true;
       }
     },
-    eat() {
-      this.snakeLenth += 1;
+    eat(player) {
+      player.snakeLenth += 1;
       this.food = this.getRand();
     },
     changeDirection(e) {
