@@ -126,7 +126,6 @@ export default {
   },
   destroyed: function() {
     window.removeEventListener("keyup", this.changeDirection);
-    //window.removeEventListener("beforeunload", this.exitHandler);
   },
   computed: {
     list: function() {
