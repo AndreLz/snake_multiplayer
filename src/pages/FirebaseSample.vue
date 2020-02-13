@@ -76,7 +76,7 @@ export default {
     };
   },
   created() {
-    this.addUser();
+    //this.addUser();
     window.addEventListener("beforeunload", this.handler);
   },
 
