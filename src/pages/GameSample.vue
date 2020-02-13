@@ -115,7 +115,6 @@ export default {
     //window.addEventListener("beforeunload", this.handler);
     var playersNow = await usersRef.once("value");
     const now = playersNow.numChildren();
-    console.log(now);
     if (now < 5) {
       this.addUser();
       this.getFood();
@@ -142,7 +141,7 @@ export default {
   methods: {
     //============================================== Firebase Functions =====================================================================
     updateUser: function() {
-      usersRef.child(this.playerId).set(this.you);
+      if (this.playerId) usersRef.child(this.playerId).set(this.you);
     },
     limite5: function() {
       return this.players.length > 5;
@@ -176,7 +175,6 @@ export default {
     },
 
     removeUser: function(i) {
-      console.log(this.players[i][".key"]);
       usersRef.child(this.players[i][".key"]).remove();
     },
     //============================================== Game Functions =====================================================================
@@ -250,9 +248,8 @@ export default {
       }
     },
     isFood(x, y) {
-      if (this.food.x == x && this.food.y == y) {
+      if (this.food != null && this.food.x == x && this.food.y == y)
         return true;
-      }
     },
     eat() {
       this.you.snakeLenth += 1;
