@@ -4,8 +4,6 @@ Arena do jogo 10x10, mais do que isso vai chegar um momento em que o jogo vai fi
 
 Altere databaseURL em db.js para o seu realtime database do firebase.
 
-feito com base em https://github.com/NasirNobin/vue-snake
-
 ## Project setup
 ```
 npm install
